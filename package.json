@@ -1,0 +1,22 @@
+{
+  "name": "@akc42/app-utils",
+  "version": "1.0.0",
+  "description": "General Utilities for SPAs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/akc42/app-utils.git"
+  },
+  "keywords": [
+    "utilities"
+  ],
+  "author": "Alan Chandler",
+  "license": "GPL-3.0-or-later",
+  "bugs": {
+    "url": "https://github.com/akc42/app-utils/issues"
+  },
+  "homepage": "https://github.com/akc42/app-utils#readme"
+}
