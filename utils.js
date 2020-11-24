@@ -509,9 +509,6 @@ export const configPromise = new Promise(resolve => {
       sessionStorage.setItem(p, conf[p]);
     }
     resolve();
-  }).catch((e) => {
-    window.dispatchEvent(new Error(e));
-    resolve()
   });
 });
 export function Debug(t) {
