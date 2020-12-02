@@ -18,17 +18,6 @@
     along with @akc42/app-utils.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-class LocationAltered extends Event {
-  /*
-     The following are the fields provided by this event
-
-     none: 
-  */
-  constructor() {
-    super('location-altered', { composed: true, bubbles: true });
-  }
-};
-
 export function generateUri(path, params) {
   var str = [];
   if (params) {
@@ -44,16 +33,10 @@ export function generateUri(path, params) {
   }
   return path;
 }
-export function openPdf(path, params) {
-  window.open(
-    '/api/' + generateUri(path, params),
-    '_blank',
-    'chrome=yes,centerscreen,resizable,scrollbars,status,height=800,width=800');
-}
 
 export function switchPath(path, params) {
   history.pushState({}, null, generateUri(path, params));
-  window.dispatchEvent(new LocationAltered());
+  window.dispatchEvent(new CustomEvent('location-altered', { composed: true, bubbles: true }));
 }
 
 export function domHost(self) {
@@ -65,43 +48,7 @@ export function domHost(self) {
   return parent ? parent.host : self;
 }
 
-function _walk(node, criteria, slot) {
-  if (node.assignedSlot === null || node.assignedSlot === slot) {
-    if (node.localName === 'slot') {
-      const assignedNodes = node.assignedNodes();
-      if (assignedNodes.length === 0) {
-        _walkA(node.children, criteria);
-      } else {
-        _walkA(assignedNodes.filter(n => n.nodeType === Node.ELEMENT_NODE), criteria, node);
-      }
-    } else if (!criteria(node)) {
-      if (customElements.get(node.localName)) _walkA(node.shadowRoot.children, criteria);
-      _walkA(node.children, criteria);
-    }
-  }
-}
-function _walkA(nodes, criteria, slot) {
-  for (let n of nodes) {
-    _walk(n, criteria, slot);
-  }
-}
-export function walk(walknode, criteria) {
-  _walk(walknode, criteria, null);
-}
-
-export class ApiError extends Event {
-  /*
-     The following are the fields provided by this event
-
-     reason: reason for error
-  */
-  constructor(reason) {
-    super('api-error', { composed: true, bubbles: true });
-    this.reason = reason;
-  }
-};
-
-export async function api(url, params, signal) {
+export async function api(url, params, blob) {
   const options = {
     credentials: 'same-origin',
     method: 'post',
@@ -110,18 +57,26 @@ export async function api(url, params, signal) {
     }),
     body: JSON.stringify(params)
   };
-  if (signal) options.signal = signal;
   let text;
   try {
     const response = await window.fetch('/api/' + url, options);
-    if (!response.ok) throw new ApiError(response.status);
-    text = await response.text();
-    return JSON.parse(text);
+    if (!response.ok) throw new CustomEvent('api-error', {composed: true, bubbles: true , details:response.status});
+    if (blob) {
+      text = '---500---';  //Simulate a 500 incase there is an error in following.
+      const b = await response.blob();
+      window.open(
+        URL.createObjectURL(b),
+        '_blank',
+        'chrome=yes,centerscreen,resizable,scrollbars,status,height=800,width=800');
+      return {};
+    } else {
+      text = await response.text();
+      return JSON.parse(text);
+    }
   } catch (err) {
     if (err.type === 'api-error') throw err; //just 
     //we failed to parse the json - the actual code should be in the text near the end;
-    throw new ApiError(parseInt(text.substr(-6, 3), 10));
-
+    throw new CustomEvent('api-error', { composed: true, bubbles: true, details: parseInt(text.substr(-6, 3), 10)});
   }
 }
 
@@ -170,7 +125,7 @@ export async function api(url, params, signal) {
       document.body.removeEventListener('key-pressed', this._keyPressed);
     }
     _keyPressed(e) {
-      e.key is an string containing the [<modifier>+]<key> combination from one you requested
+      e.detail is an string containing the [<modifier>+]<key> combination from one you requested
     }
 
     The second way of using this, better for when you don't want to react unless a particular area of the page has focus, or
@@ -219,17 +174,6 @@ export async function api(url, params, signal) {
  * Values from:
  * https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent.keyCode#Value_of_keyCode
  */
-export class KeyPressed extends Event {
-  /*
-     The following are the fields provided by this event
-
-     keys: The code string of the key pressed. (but event.key when one is pressed)
-  */
-  constructor(keys) {
-    super('key-pressed', { composed: true, bubbles: true });
-    this.key = keys;
-  }
-};
 
 const KEY_CODE = {
   8: 'backspace',
@@ -391,7 +335,7 @@ export class AppKeys {
           //we only wanted the modifiers so if our key IS the modifier we wanted
           if (MODIFIER_KEYS[binding.key] === validKey) {
             this.lastPressed = binding;
-            if (!this.target.dispatchEvent(new KeyPressed(binding.combo))) {
+            if (!this.target.dispatchEvent(new CustomEvent('key-pressed', {bubbles: true, composed: true, detail: binding.combo}))) {
               e.preventDefault();
               return;
             }
@@ -400,7 +344,7 @@ export class AppKeys {
       }
       if (binding.key === validKey) {
         this.lastPressed = binding
-        if (!this.target.dispatchEvent(new KeyPressed(binding.combo))) {
+        if (!this.target.dispatchEvent(new CustomEvent('key-pressed', { bubbles: true, composed: true, detail: binding.combo }))) {
           e.preventDefault();
           return;
         }
@@ -409,16 +353,6 @@ export class AppKeys {
   }
 }
 
-class MasterClose extends Event {
-  /*
-     This event is fired on the window when a master tab closes.  Its for the home page to re check the master
-     promise to see if made it.
-
-  */
-  constructor() {
-    super('master-close', { composed: true, bubbles: true });
-  }
-};
 
 let master = false;
 let masterResolver;
@@ -464,7 +398,7 @@ const storageHandler = (e) => {
             localStorage.setItem('pageClaim', tabId); //try and claim storage
           }, 70 * Math.floor((Math.random() * 40))); //wait random time between 70ms and about 3 seconds before trying to claim master
         }
-        window.dispatchEvent(new MasterClose());
+        window.dispatchEvent(new CustomEvent('master-close', { composed: true, bubbles: true }));
       }
     }
   }
@@ -548,4 +482,39 @@ export function Debug(t) {
         .catch(() => true);//no interest in reply, but must make sure it doesn't throw an exception.
     }
   }
+}
+//handle the on submit event from a form
+
+export function submit(e) {
+  e.stopPropagation();
+  e.preventDefault();
+  const target = e.currentTarget;
+  const params = {};
+  let isAllValid = true;
+  target.querySelectorAll('input, select').forEach(field => {
+    if (field.type === 'radio' || field.type === 'checkbox') return;
+    if (!(isAllValid && field.checkValidity())) {
+      isAllValid = false;
+      return;
+    }
+    if (field.name !== undefined && field.value !== undefined) params[field.name] = field.value;
+  });
+  if (isAllValid) {
+    target.querySelectorAll('input[type="checkbox"]:checked, input[type="radio"]:checked').forEach(field => {
+      if (!(isAllValid && field.checkValidity())) {
+        isAllValid = false;
+        return;
+      }
+      if (field.name !== undefined && field.value !== undefined) params[field.name] = field.value;
+    });
+    if (isAllValid && !(target.validator !== undefined && typeof target.validator === 'function' && !target.validator(target))) {
+      target.dispatchEvent(new CustomEvent('wait-request', { composed: true, bubbles: true, detail: true}));
+      api(new URL(target.action).pathname, params).then(response => {
+        target.dispatchEvent(new CustomEvent('wait-request', { composed: true, bubbles: true, detail: false }));
+        target.dispatchEvent(new CustomEvent('form-response', { composed: true, bubbles: true, detail: response }))
+      });
+      return;
+    }
+  }
+  target.dispatchEvent(new CustomEvent('form-response', { composed: true, bubbles: true, detail: null }))
 }
