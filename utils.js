@@ -436,7 +436,7 @@ export const configPromise = new Promise(resolve => {
       return JSON.parse(text);
     } catch (err) {
       //we failed to parse the json - the actual code should be in the text near the end;
-      throw new ApiError(parseInt(text.substr(-6, 3), 10));
+      throw new CustomEvent('api-error', {bubbles: true, composed: true, detail:parseInt(text.substr(-6, 3), 10)});
     }
   }).then(conf => { //most like just update values.
     for(const p in conf ) {
@@ -456,7 +456,7 @@ export function Debug(t) {
   let clientUid = 0;
   configPromise.then(() => {
     const clientLog = sessionStorage.getItem('clientLog')
-    clientUid = sessionStorage.getItem('clientUid');
+    clientUid = parseInt(sessionStorage.getItem('clientUid'),10);
 
     using = ((clientLog === null && topic === 'logger' ) || 
               clientLog === 'ALL' || 
@@ -500,6 +500,7 @@ export function submit(e) {
     if (field.name !== undefined && field.value !== undefined) params[field.name] = field.value;
   });
   if (isAllValid) {
+    //we ignored checkboxes and radio boxes above just so we could limit to checked ones here
     target.querySelectorAll('input[type="checkbox"]:checked, input[type="radio"]:checked').forEach(field => {
       if (!(isAllValid && field.checkValidity())) {
         isAllValid = false;
@@ -508,6 +509,7 @@ export function submit(e) {
       if (field.name !== undefined && field.value !== undefined) params[field.name] = field.value;
     });
     if (isAllValid && !(target.validator !== undefined && typeof target.validator === 'function' && !target.validator(target))) {
+      //if there is a waiting-indicator element it will pick this up, otherwise its a no-op
       target.dispatchEvent(new CustomEvent('wait-request', { composed: true, bubbles: true, detail: true}));
       api(new URL(target.action).pathname, params).then(response => {
         target.dispatchEvent(new CustomEvent('wait-request', { composed: true, bubbles: true, detail: false }));
