@@ -431,18 +431,9 @@ timer = setTimeout(() => {
 localStorage.setItem('pageOpen', tabId);
 
 export const configPromise = new Promise(resolve => {
-  window.fetch('/api/config', { method: 'get' }).then(response => response.text()).then(text => {
-    try {
-      return JSON.parse(text);
-    } catch (err) {
-      //escape promise chain
-      setTimeout(() => { 
-        //we failed to parse the json - the actual code should be in the text near the end;
-        throw new CustomEvent('api-error', { bubbles: true, composed: true, detail: parseInt(text.substr(-6, 3), 10) });
-      });
-      //we failed to parse the json - the actual code should be in the text near the end;
-      
-    }
+  window.fetch('/api/config', { method: 'get' }).then(response => {
+    if (!response.ok) throw new CustomEvent('api-error', {bubbles: true, composed: true, detail:response.status});
+    return response.json()
   }).then(conf => { //most like just update values.
     for(const p in conf ) {
       sessionStorage.setItem(p, conf[p]);
