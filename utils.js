@@ -74,9 +74,13 @@ export async function api(url, params, blob) {
       return JSON.parse(text);
     }
   } catch (err) {
-    if (err.type === 'api-error') throw err; //just 
-    //we failed to parse the json - the actual code should be in the text near the end;
-    throw new CustomEvent('api-error', { composed: true, bubbles: true, details: parseInt(text.substr(-6, 3), 10)});
+    const e = err;
+    //we do this to escape the promise chain
+    setTimeout(() => {
+      if (e.type !== 'api-error') throw e; //just throw whatever error we had
+      //we failed to parse the json - the actual code should be in the text near the end;
+      throw new CustomEvent('api-error', { composed: true, bubbles: true, details: parseInt(text.substr(-6, 3), 10) });
+    });
   }
 }
 
@@ -435,8 +439,13 @@ export const configPromise = new Promise(resolve => {
     try {
       return JSON.parse(text);
     } catch (err) {
+      //escape promise chain
+      setTimeout(() => { 
+        //we failed to parse the json - the actual code should be in the text near the end;
+        throw new CustomEvent('api-error', { bubbles: true, composed: true, detail: parseInt(text.substr(-6, 3), 10) });
+      });
       //we failed to parse the json - the actual code should be in the text near the end;
-      throw new CustomEvent('api-error', {bubbles: true, composed: true, detail:parseInt(text.substr(-6, 3), 10)});
+      
     }
   }).then(conf => { //most like just update values.
     for(const p in conf ) {
