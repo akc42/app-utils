@@ -77,7 +77,7 @@ export async function api(url, params, blob) {
     const e = err;
     //we do this to escape the promise chain
     setTimeout(() => {
-      if (e.type !== 'api-error') throw e; //just throw whatever error we had
+      if (e.type === 'api-error') throw e; //just throw whatever error we had
       //we failed to parse the json - the actual code should be in the text near the end;
       throw new CustomEvent('api-error', { composed: true, bubbles: true, details: parseInt(text.substr(-6, 3), 10) });
     });
