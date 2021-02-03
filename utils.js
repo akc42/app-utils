@@ -81,6 +81,7 @@ export async function api(url, params, blob) {
       //we failed to parse the json - the actual code should be in the text near the end;
       throw new CustomEvent('api-error', { composed: true, bubbles: true, details: parseInt(text.substr(-6, 3), 10) });
     });
+    return {}; //just sumulate a null response
   }
 }
 
