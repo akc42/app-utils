@@ -20,7 +20,7 @@
 
 
 
-export function domHost(self) {
+function domHost(self) {
   let parent = self.parentNode;
   while (parent && parent.nodeType !== 11) {
     parent = parent.parentNode;  //work up the hierarchy
@@ -28,4 +28,4 @@ export function domHost(self) {
 
   return parent ? parent.host : self;
 }
-
+export default domHost;

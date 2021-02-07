@@ -20,7 +20,7 @@
 
 let master = false;
 let masterResolver;
-export default masterPromise = new Promise(resolve => masterResolver = resolve);
+const masterPromise = new Promise(resolve => masterResolver = resolve);
 
 
 let otherTabs = new Set();
@@ -93,4 +93,4 @@ timer = setTimeout(() => {
   masterResolver(true);
 }, 70);
 localStorage.setItem('pageOpen', tabId);
-
+export default masterPromise;

@@ -18,7 +18,7 @@
     along with @akc42/app-utils.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-export default configPromise = new Promise(resolve => {
+const configPromise = new Promise(resolve => {
   window.fetch('/api/config', { method: 'get' }).then(response => {
     if (!response.ok) throw new CustomEvent('api-error', {bubbles: true, composed: true, detail:response.status});
     return response.json()
@@ -29,3 +29,4 @@ export default configPromise = new Promise(resolve => {
     resolve();
   });
 });
+export default configPromise;

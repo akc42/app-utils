@@ -171,7 +171,7 @@ const SPACE_KEY = /^space(bar)?/;
 
 const ESC_KEY = /^escape$/;
 
-export class AppKeys {
+class AppKeys {
   constructor(target, keys, stop) {
     this.stop = stop; //marker to say stop propagation;
     if (!(target instanceof HTMLElement)) throw new Error('AppKeys required an HTML Element as target');
@@ -290,3 +290,4 @@ export class AppKeys {
     }
   }
 }
+export default AppKeys;
