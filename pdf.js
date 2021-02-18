@@ -1,6 +1,6 @@
 /**
 @licence
-    Copyright (c) 2020 Alan Chandler, all rights reserved
+    Copyright (c) 2021 Alan Chandler, all rights reserved
 
     This file is part of @akc42/app-utils.
 
@@ -18,25 +18,19 @@
     along with @akc42/app-utils.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-export function generateUri(path, params) {
-  var str = [];
-  if (params) {
-    for (var param in params) {
-      //eslint-disable-next-line no-prototype-builtins
-      if (params.hasOwnProperty(param)) {
-        str.push(encodeURIComponent(param) + '=' + encodeURIComponent(params[param]));
-      }
-    }
-    if (str.length > 0) {
-      return path + '?' + str.join('&');
-    }
-  }
-  return path;
-}
+export default (url,params) => {
 
-export function switchPath(path, params) {
-  history.pushState({}, null, generateUri(path, params));
-  window.dispatchEvent(new CustomEvent('location-altered', { composed: true, bubbles: true }));
+  const options = {
+    credentials: 'same-origin',
+    method: 'post',
+    headers: new Headers({
+      'content-type': 'application/json'
+    }),
+    body: JSON.stringify(params)
+  };
+  window.fetch(`/api/pdf/${url}`,options).then(response => response.blob()).then(response =>
+    window.open(
+      URL.createObjectURL(response),
+      '_blank',
+      'chrome=yes,centerscreen,resizable,scrollbars,status,height=800,width=800'));
 }
-export default switchPath;
-

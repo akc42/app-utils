@@ -4,7 +4,7 @@
 
   1.  Include a script tag in your index.html file <script src="/path/to/libs/debug.js" defer></script>
   2.  Manually set localStorage debug variable to the "DEBUG" environment variable described in the nodejs version
-  2.  In you code in a module where you want to use debug
+  3.  In you code in a module where you want to use debug
       const debug = require('debug')('debug:tag:for:this:module');
       use with debug('output',...args);
 
