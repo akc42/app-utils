@@ -26,7 +26,7 @@ export default (url,params) => {
     headers: new Headers({
       'content-type': 'application/json'
     }),
-    body: JSON.stringify(params)
+    body: JSON.stringify(params ?? {})
   };
   window.fetch(`/api/pdf/${url}`,options).then(response => response.blob()).then(response =>
     window.open(
