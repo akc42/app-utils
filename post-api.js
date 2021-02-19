@@ -19,15 +19,16 @@
 */
 
 
-export default async function api(url, params, blob) {
+export default async function api(url, params, blob, signal) {
   const options = {
     credentials: 'same-origin',
     method: 'post',
     headers: new Headers({
       'content-type': 'application/json'
     }),
-    body: JSON.stringify(params)
+    body: JSON.stringify(params ?? {})
   };
+  if (signal) options.signal = signal;
   let text;
   try {
     const response = await window.fetch('/api/' + url, options);
