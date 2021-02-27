@@ -1,6 +1,6 @@
 {
   "name": "@akc42/app-utils",
-  "version": "2.0.8",
+  "version": "2.0.9",
   "description": "General Utilities for SPAs",
   "main": "",
   "scripts": {

@@ -43,7 +43,8 @@ export default async function api(url, params, blob, signal) {
       return {};
     } else {
       text = await response.text();
-      return JSON.parse(text);
+      if (text.length > 0) return JSON.parse(text);
+      return {};
     }
   } catch (err) {
     if (err.type === 'api-error') throw err; //just throw whatever error we had
