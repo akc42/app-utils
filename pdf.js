@@ -19,5 +19,5 @@
 */
 import api from './post-api.js';
 export default (url,params) => {
-  api(url,params,true);
+  api(`pdf/${url}`,params,true);
 }
