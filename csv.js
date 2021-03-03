@@ -22,8 +22,16 @@ import {generateUri} from './switch-path.js';
 const link = document.createElement('a');
 link.setAttribute('download', null);
 
-export default (url,params) => {
-  link.setAttribute('href', generateUri(`/api/csv/${url}`, params ?? {}));
-
+const csv = (url, params) => {
+  let href;
+  if (typeof url == 'string') {
+    href = generateUri(`/api/csv/${url}`, params ?? {});
+  } else {
+    //we assume it is a URL object
+    href = url.href;
+  }
+  link.setAttribute('href', href);
   link.click();
-}
+};
+
+export default csv;
