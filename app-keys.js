@@ -273,7 +273,7 @@ class AppKeys {
           if (MODIFIER_KEYS[binding.key] === validKey) {
             this.lastPressed = binding;
             if (this.stop) e.stopPropagation();
-            if (!this.target.dispatchEvent(new CustomEvent('key-pressed', {bubbles: true, composed: true, detail: binding.combo}))) {
+            if (!this.target.dispatchEvent(new CustomEvent('key-pressed', {bubbles: true, composed: true, cancelable: true, detail: binding.combo}))) {
               e.preventDefault();
             }
             return;
@@ -283,7 +283,7 @@ class AppKeys {
       if (binding.key === validKey) {
         this.lastPressed = binding
         if (this.stop) e.stopPropagation();
-        if (!this.target.dispatchEvent(new CustomEvent('key-pressed', { bubbles: true, composed: true, detail: binding.combo }))) {
+        if (!this.target.dispatchEvent(new CustomEvent('key-pressed', { bubbles: true, composed: true, cancelable: true, detail: binding.combo }))) {
           e.preventDefault();
         }
         return;
