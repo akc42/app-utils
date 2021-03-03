@@ -232,7 +232,6 @@ class AppKeys {
 
   }
   _keyHandler(keyBindings, e) {
-    if (this.stop) e.stopPropagation();
     if (e.defaultPrevented) return;
     const key = e.key.toLowerCase();
     let validKey = '';
@@ -273,19 +272,21 @@ class AppKeys {
           //we only wanted the modifiers so if our key IS the modifier we wanted
           if (MODIFIER_KEYS[binding.key] === validKey) {
             this.lastPressed = binding;
+            if (this.stop) e.stopPropagation();
             if (!this.target.dispatchEvent(new CustomEvent('key-pressed', {bubbles: true, composed: true, detail: binding.combo}))) {
               e.preventDefault();
-              return;
             }
+            return;
           }
         }
       }
       if (binding.key === validKey) {
         this.lastPressed = binding
+        if (this.stop) e.stopPropagation();
         if (!this.target.dispatchEvent(new CustomEvent('key-pressed', { bubbles: true, composed: true, detail: binding.combo }))) {
           e.preventDefault();
-          return;
         }
+        return;
       }
     }
   }
