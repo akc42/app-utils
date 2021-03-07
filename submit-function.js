@@ -22,38 +22,66 @@
 
 import api from './post-api.js';
 
-export default function submit(e) {
-  e.stopPropagation();
-  e.preventDefault();
-  const target = e.currentTarget;
-  const params = {};
-  let isAllValid = true;
-  target.querySelectorAll('input, select').forEach(field => {
-    if (field.type === 'radio' || field.type === 'checkbox') return;
-    if (!(isAllValid && field.checkValidity())) {
-      isAllValid = false;
-      return;
+function checkNode(node, params) {
+  if (node.localName === 'input' || node.localName === 'select') {
+    if (node.type === 'radio' || node.type === 'checkbox') {
+      if (node.name !== undefined && node.value !== undefined && node.checked) params[node.name] = node.value;
+      return true;
     }
-    if (field.name !== undefined && field.value !== undefined) params[field.name] = field.value;
-  });
-  if (isAllValid) {
-    //we ignored checkboxes and radio boxes above just so we could limit to checked ones here
-    target.querySelectorAll('input[type="checkbox"]:checked, input[type="radio"]:checked').forEach(field => {
-      if (!(isAllValid && field.checkValidity())) {
-        isAllValid = false;
-        return;
-      }
-      if (field.name !== undefined && field.value !== undefined) params[field.name] = field.value;
-    });
-    if (isAllValid && !(target.validator !== undefined && typeof target.validator === 'function' && !target.validator(target))) {
-      //if there is a waiting-indicator element it will pick this up, otherwise its a no-op
-      target.dispatchEvent(new CustomEvent('wait-request', { composed: true, bubbles: true, detail: true}));
-      api(new URL(target.action).pathname, params).then(response => {
-        target.dispatchEvent(new CustomEvent('wait-request', { composed: true, bubbles: true, detail: false }));
-        target.dispatchEvent(new CustomEvent('form-response', { composed: true, bubbles: true, detail: response }))
-      });
-      return;
+    if (node.name !== undefined && node.value !== undefined) params[node.name] = node.value;
+    return node.checkValidity() && node.dispatchEvent(new CustomEvent('validity-check', { bubbles: true, cancelable: true, composed: true, detail: node.value }));
+  }
+  if (node.localName === 'slot') {
+    const assignedNodes = node.assignedNodes();
+    if (assignedNodes.length > 0) {
+      //we have assigned nodes, so ignore the slots children
+      return assignedNodes.filter(n => n.nodeType === Node.ELEMENT_NODE).every(n => checkNode(n, params));
     }
   }
-  target.dispatchEvent(new CustomEvent('form-response', { composed: true, bubbles: true, detail: null }))
+  //even if node validator fails we want to carry on because the checkValidity calls will trigger the error messages.
+  if (customElements.get(node.localName)) {
+    /*
+      ignore the children of custom element, they will get picked up as a slot, or we don't care because it is pretending
+      itself to be an input element and so (if it needs it) it will have a checkValidity Function - and if it does that will
+      dispatch the 'validity check' event
+    */
+    if (node.name !== undefined && node.value !== undefined) {
+      params[node.name] = node.value;
+      if (typeof node.checkValidity === 'function') {
+        return node.checkValidity();
+      }
+      return node.dispatchEvent(new CustomEvent('validity-check', { bubbles: true, cancelable: true, composed: true, detail: node.value }));
+    }
+    return checkLevel(node.shadowRoot, params);
+  }
+
+  if (node.children.length > 0) return checkLevel(node, params);
+  return true
+}
+
+function checkLevel(target, params) {
+  return Array.prototype.filter.call(target.children, n => n.nodeType === Node.ELEMENT_NODE).every(node => checkNode(node, params));
+}
+
+export default function submit(e) {
+  let target;
+  if (e.currentTarget) {
+    e.stopPropagation();
+    e.preventDefault();
+    target = e.currentTarget;
+  } else {
+    target = e;
+  }
+  const params = {};
+  if (checkLevel(target, params)) {
+    target.dispatchEvent(new CustomEvent('wait-request', { composed: true, bubbles: true, detail: true }));
+    api(new URL(target.action).pathname, params).then(response => {
+      target.dispatchEvent(new CustomEvent('wait-request', { composed: true, bubbles: true, detail: false }));
+      target.dispatchEvent(new CustomEvent('form-response', { composed: true, bubbles: true, detail: response }));
+    });
+    return true;
+  } else {
+    target.dispatchEvent(new CustomEvent('form-response', { composed: true, bubbles: true, detail: null }));
+    return false;
+  }
 }
