@@ -23,6 +23,7 @@
 import api from './post-api.js';
 
 function checkNode(node, params) {
+
   if (node.localName === 'input' || node.localName === 'select') {
     if (node.type === 'radio' || node.type === 'checkbox') {
       if (node.name !== undefined && node.value !== undefined && node.checked) params[node.name] = node.value;
@@ -35,7 +36,7 @@ function checkNode(node, params) {
     const assignedNodes = node.assignedNodes();
     if (assignedNodes.length > 0) {
       //we have assigned nodes, so ignore the slots children
-      return assignedNodes.filter(n => n.nodeType === Node.ELEMENT_NODE).every(n => checkNode(n, params));
+      return assignedNodes.filter(n => n.nodeType === Node.ELEMENT_NODE).reduce((a, n) => checkNode(n, params) && a, true);
     }
   }
   //even if node validator fails we want to carry on because the checkValidity calls will trigger the error messages.
@@ -60,7 +61,7 @@ function checkNode(node, params) {
 }
 
 function checkLevel(target, params) {
-  return Array.prototype.filter.call(target.children, n => n.nodeType === Node.ELEMENT_NODE).every(node => checkNode(node, params));
+  return Array.prototype.filter.call(target.children, n => n.nodeType === Node.ELEMENT_NODE).reduce((acc, node) => checkNode(node, params) && acc, true);
 }
 
 export default function submit(e) {
