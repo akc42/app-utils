@@ -80,7 +80,7 @@ export default function submit(e) {
       target.dispatchEvent(new CustomEvent('wait-request', { composed: true, bubbles: true, detail: false }));
       target.dispatchEvent(new CustomEvent('form-response', { composed: true, bubbles: true, detail: response }));
     });
-    return true;
+    return params;
   } else {
     target.dispatchEvent(new CustomEvent('form-response', { composed: true, bubbles: true, detail: null }));
     return false;
