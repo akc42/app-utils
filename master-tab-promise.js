@@ -20,7 +20,7 @@
 
 let master = false;
 let masterResolver;
-const masterPromise = new Promise(resolve => masterResolver = resolve);
+let masterPromise = new Promise(resolve => masterResolver = resolve);
 
 
 let otherTabs = new Set();
@@ -88,9 +88,11 @@ const unloadHandler = () => {
 };
 window.addEventListener('unload', unloadHandler);
 timer = setTimeout(() => {
-  timer = 0;  //prevent out assertion being overridden by a later try
+  timer = 0;  //prevent our assertion being overridden by a later try
   master = true;
   masterResolver(true);
 }, 70);
 localStorage.setItem('pageOpen', tabId);
-export default masterPromise;
+export default function() {
+  return masterPromise;
+};

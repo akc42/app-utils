@@ -18,15 +18,52 @@
     along with @akc42/app-utils.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-const configPromise = new Promise(resolve => {
-  window.fetch('/api/config', { method: 'get' }).then(response => {
-    if (!response.ok) throw new CustomEvent('api-error', {bubbles: true, composed: true, detail:response.status});
-    return response.json()
-  }).then(conf => { //most like just update values.
-    for(const p in conf ) {
-      sessionStorage.setItem(p, conf[p]);
+let configPromise;
+
+export function mockConfig(promise) {
+  configPromise = promise;
+}
+
+export default async function config() {
+  if (configPromise === undefined) {
+    let resolved = false;
+    let resolver;
+    configPromise = new Promise(accept => resolver = accept);
+    let text;
+    let config;
+    while (!resolved) {
+      try {
+        const response = await window.fetch('/api/config', { method: 'get' })
+        if (!response.ok) throw new CustomEvent('api-error', { composed: true, bubbles: true, detail: response.status });
+        text = await response.text();
+        config = JSON.parse(text); 
+        /* 
+          some uses of this put the config in sessionStorage, but that only works if every config value is a string
+          so we check if they are a string, otherwise we stringify them
+        */
+        for (const p in config) {
+          const v = config[p];
+          if (typeof v === 'string') {
+            sessionStorage.setItem(p, v);
+          } else {
+            sessionStorage.setItem(p,JSON.stringify(v));
+          }
+        }
+        resolver(config);
+        resolved = true;
+      } catch (err) {
+        if (err.detail === 502) {
+          //server down so wait a minute and try again;
+          await new Promise(accept => {
+            setTimeout(accept, 60000);
+          });
+        } else {
+          if (err.type === 'api-error') throw err; //just throw whatever error we had
+          //we failed to parse the json - the actual code should be in the text near the end;
+          throw new CustomEvent('api-error', { composed: true, bubbles: true, detail: parseInt(text.substr(-6, 3), 10) });
+        }
+      }
     }
-    resolve();
-  });
-});
-export default configPromise;
+  }
+  return configPromise;
+}
