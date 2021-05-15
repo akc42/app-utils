@@ -24,7 +24,7 @@ export function mockConfig(promise) {
   configPromise = promise;
 }
 
-export default async function config() {
+async function config() {
   if (configPromise === undefined) {
     let resolved = false;
     let resolver;
@@ -67,3 +67,6 @@ export default async function config() {
   }
   return configPromise;
 }
+
+
+export default config;

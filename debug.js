@@ -57,7 +57,7 @@
 const topicMap = new Map();
 
 import configGetter from './config-promise.js';
-export default function (t) {
+function Debug (t) {
   if (typeof t !== 'string' || t.length === 0 || !/^[a-zA-Z]+$/.test(t)) {
     console.error('Debug requires topic which is a non zero length string of only letters', t, 'Received');
     throw new Error('Invalid Debug Topic');
@@ -115,3 +115,5 @@ export default function (t) {
   topicMap.set(topicHandler.topic, topicHandler);
   return topicHandler.debug
 }
+
+export default Debug;

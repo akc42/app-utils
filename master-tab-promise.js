@@ -93,6 +93,7 @@ timer = setTimeout(() => {
   masterResolver(true);
 }, 70);
 localStorage.setItem('pageOpen', tabId);
-export default function() {
+function getPromise() {
   return masterPromise;
 };
+export default getPromise;
