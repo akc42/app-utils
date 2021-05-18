@@ -56,7 +56,8 @@
 
 const topicMap = new Map();
 
-import configGetter from './config-promise.js';
+import api from './post-api.js';
+
 function Debug (t) {
   if (typeof t !== 'string' || t.length === 0 || !/^[a-zA-Z]+$/.test(t)) {
     console.error('Debug requires topic which is a non zero length string of only letters', t, 'Received');
@@ -73,38 +74,21 @@ function Debug (t) {
     topic: tl,
     timestamp: new Date().getTime(),
     debug: function (...args) {
-      configGetter().then(config => {
-        if (config.debug) {
-          let found = false;
-          const split = config.debug.split(',')
-          for (const subtopic of split) {
-            if (subtopic.slice(-1) === '*') {
-              const subtopicpart = subtopic.slice(0, -1);
-              if (this.topic.slice(0, subtopicpart.length).toLowerCase() === subtopicpart.toLowerCase()) {
-                found = true;
-                break;
-              }
-            } else if (this.topic.toLowerCase() === subtopic.toLowerCase()) {
-              found = true;
-              break;
-            }
-          }
-          if (found) {
-            const message = args.reduce((cum, arg) => {
-              return `${cum} ${arg}`.trim();
-            }, '');
-            const now = new Date().getTime();
-            const gap = now - this.timestamp;
-            this.timestamp = now;
-            console.log(`+${gap}ms`, this.topic, message);
-            const blob = new Blob([JSON.stringify({
-              topic: this.topic,
-              message: message,
-              gap: gap
-            })], { type: 'application/json' })
+      api(`debugconf/${this.topic}`).then(found => {
+        if (found) {
+          const message = args.reduce((cum, arg) => {
+            return `${cum} ${arg}`.trim();
+          }, '');
+          const now = new Date().getTime();
+          const gap = now - this.timestamp;
+          this.timestamp = now;
+          console.log(`+${gap}ms`, this.topic, message);
+          const blob = new Blob([JSON.stringify({
+            message: message,
+            gap: gap
+          })], { type: 'application/json' })
 
-            navigator.sendBeacon('/api/log', blob);
-          }
+          navigator.sendBeacon(`/api/debuglog/${this.topic}`, blob);
         }
 
       });

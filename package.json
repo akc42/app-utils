@@ -1,8 +1,10 @@
 {
   "name": "@akc42/app-utils",
-  "version": "3.0.1",
+  "version": "3.1.0",
   "description": "General Utilities for SPAs",
-  "main": "",
+  "exports": {
+    ".": "./*.js"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
