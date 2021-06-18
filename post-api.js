@@ -34,7 +34,7 @@ export default async function api(url, params, blob, signal) {
     const response = await window.fetch('/api/' + url, options);
     if (!response.ok) throw new CustomEvent('api-error', {composed: true, bubbles: true , detail:response.status});
     if (blob) {
-      text = '---500---';  //Simulate a 500 incase there is an error in following.
+      text = '---502---';  //Simulate a 502 (bad gateway) incase there is an error in following.
       const b = await response.blob();
       window.open(
         URL.createObjectURL(b),
@@ -49,6 +49,6 @@ export default async function api(url, params, blob, signal) {
   } catch (err) {
     if (err.type === 'api-error') throw err; //just throw whatever error we had
     //we failed to parse the json - the actual code should be in the text near the end;
-    throw new CustomEvent('api-error', { composed: true, bubbles: true, detail: parseInt(text.substr(-6, 3), 10) });
+    throw new CustomEvent('api-error', { composed: true, bubbles: true, detail: parseInt((text?? '---502---').substr(-6, 3), 10) });
   }
 }
