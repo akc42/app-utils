@@ -75,9 +75,9 @@ export default function submit(e) {
   }
   const params = {};
   if (checkLevel(target, params)) {
-    target.dispatchEvent(new CustomEvent('wait-request', { composed: true, bubbles: true, detail: true }));
+    document.body.dispatchEvent(new CustomEvent('wait-request', {detail: true }));
     api(target.getAttribute('action'), params).then(response => {
-      target.dispatchEvent(new CustomEvent('wait-request', { composed: true, bubbles: true, detail: false }));
+      document.body.dispatchEvent(new CustomEvent('wait-request', {detail: false }));
       target.dispatchEvent(new CustomEvent('form-response', { composed: true, bubbles: true, detail: response }));
     });
     return params;
