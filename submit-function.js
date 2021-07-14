@@ -75,11 +75,14 @@ export default function submit(e) {
   }
   const params = {};
   if (checkLevel(target, params)) {
-    document.body.dispatchEvent(new CustomEvent('wait-request', {detail: true }));
-    api(target.getAttribute('action'), params).then(response => {
-      document.body.dispatchEvent(new CustomEvent('wait-request', {detail: false }));
-      target.dispatchEvent(new CustomEvent('form-response', { composed: true, bubbles: true, detail: response }));
-    });
+    const action = target.getAttribute('action')
+    if (target.dispatchEvent(new CustomEvent('form-submitting', { cancelable:true,  composed: true, bubbles: true, detail: params}))) {
+      document.body.dispatchEvent(new CustomEvent('wait-request', {detail: true }));
+      api(action, params).then(response => {
+        document.body.dispatchEvent(new CustomEvent('wait-request', {detail: false }));
+        target.dispatchEvent(new CustomEvent('form-response', { composed: true, bubbles: true, detail: response }));
+      });
+    }
     return params;
   } else {
     target.dispatchEvent(new CustomEvent('form-response', { composed: true, bubbles: true, detail: null }));
