@@ -64,7 +64,7 @@ function Debug (t) {
     throw new Error('Invalid Debug Topic');
   }
   const tl = t.toLowerCase(); 
-  let timestamp = new Date().getTime();
+
   if (topicMap.has(tl) ) {
     const topic = topicMap.get(tl);
     return topic.debug;
@@ -73,26 +73,30 @@ function Debug (t) {
   const topicHandler = {
     topic: tl,
     timestamp: new Date().getTime(),
-    debug: function (...args) {
-      api(`debugconf/${this.topic}`).then(found => {
-        if (found) {
-          const message = args.reduce((cum, arg) => {
-            return `${cum} ${arg}`.trim();
-          }, '');
-          const now = new Date().getTime();
-          const gap = now - this.timestamp;
-          this.timestamp = now;
-          console.log(`+${gap}ms`, this.topic, message);
-          const blob = new Blob([JSON.stringify({
-            message: message,
-            gap: gap
-          })], { type: 'application/json' })
+    expires: 0, //when our knowledge of enabled expires
+    enabled: false, //is this topic enabled
+    debug: async function (...args) {
+      //do time calc before potential delay to see if we are enabled
+      const now = new Date().getTime();
+      const gap = now - this.timestamp;
+      this.timestamp = now;
+      if (now > this.expires) {
+        //expired so find out if topic is enabled
+        this.enabled = await api(`debugconf/${this.topic}`);
+        this.expires = now + 60000;
+      }
+      if (this.enabled) {
+        const message = args.reduce((cum, arg) => {
+          return `${cum} ${arg}`.trim();
+        }, '');
+        console.log(`+${gap}ms`, this.topic, message);
+        const blob = new Blob([JSON.stringify({
+          message: message,
+          gap: gap
+        })], { type: 'application/json' })
 
-          navigator.sendBeacon(`/api/debuglog/${this.topic}`, blob);
-        }
-
-      });
-
+        navigator.sendBeacon(`/api/debuglog/${this.topic}`, blob);
+      }
     }
   }
   topicHandler.debug = topicHandler.debug.bind(topicHandler);

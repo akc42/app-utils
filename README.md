@@ -134,13 +134,11 @@ The purpose of this module is to provide a debugable capability which can be
   config-promise) is set to a string which is a comma separated list of topics
   and that list has the topic for this debug call in it.
 
-  **Note**: It is normally expected for the server to provide a mechanism to
-  update the config before it is returned and for the client to be restarted to
-  enable the appropriate debug topics. An alternative could be for a client side
-  function to use the `mockConfig` call to replace the promise with one which
-  contained a different list of topics. `debug` (the function returned by the
-  call to `Debug('topic')`) checks the list of topics on every call so would
-  dynamically pick up the changes
+  **Note**: the debug function checks with the server (via a debugconf api call)
+  to see if the topic is enabled.  This is then cached for a minute, so any
+  calls around the same time will use the reply.  This allows the server to
+  change what topics are available and for the client side to quickly find if it
+  should now start sending message
 
 # dom-host
 
