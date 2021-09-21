@@ -81,9 +81,11 @@ function Debug (t) {
       const gap = now - this.timestamp;
       this.timestamp = now;
       if (now > this.expires) {
+        //do this first so following requests don't try to find out again whilst I am checking, wasting calls
+        this.expires = now + 60000; 
         //expired so find out if topic is enabled
         this.enabled = await api(`debugconf/${this.topic}`);
-        this.expires = now + 60000;
+
       }
       if (this.enabled) {
         const message = args.reduce((cum, arg) => {
