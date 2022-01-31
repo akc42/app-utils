@@ -84,7 +84,10 @@ function Debug (t) {
         await config(); 
         this.defined = true;
         const debugConf = sessionStorage.getItem('debug');
-        if (debugConf.indexOf(`:${this.tl}:`) >= 0) this.enabled = true;
+        if (debugConf) {
+          const topics = debugConf.split(':');
+          if (topics.includes(this.topic)) this.enabled = true;
+        }
       }
       if (this.enabled) {
         const message = args.reduce((cum, arg) => {

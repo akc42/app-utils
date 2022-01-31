@@ -134,11 +134,9 @@ The purpose of this module is to provide a debugable capability which can be
   config-promise) is set to a string which is a comma separated list of topics
   and that list has the topic for this debug call in it.
 
-  **Note**: the debug function checks with the server (via a debugconf api call)
-  to see if the topic is enabled.  This is then cached for a minute, so any
-  calls around the same time will use the reply.  This allows the server to
-  change what topics are available and for the client side to quickly find if it
-  should now start sending message
+  **Note**: the debug function checks with the sessionStorage.getItem('debug) (via an await for the Config Promise)
+  to see if the topic is enabled (assumes the result is a ':' separated string of topics).  This allows the server to
+  change what topics are available via the config api call.
 
 # dom-host
 
