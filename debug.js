@@ -53,10 +53,11 @@
   would dynamically pick up the changes
 
 */
+import config from './config-promise.js';
 
 const topicMap = new Map();
 
-import api from './post-api.js';
+
 
 function Debug (t) {
   if (typeof t !== 'string' || t.length === 0 || !/^[a-zA-Z]+$/.test(t)) {
@@ -64,7 +65,6 @@ function Debug (t) {
     throw new Error('Invalid Debug Topic');
   }
   const tl = t.toLowerCase(); 
-
   if (topicMap.has(tl) ) {
     const topic = topicMap.get(tl);
     return topic.debug;
@@ -73,19 +73,18 @@ function Debug (t) {
   const topicHandler = {
     topic: tl,
     timestamp: new Date().getTime(),
-    expires: 0, //when our knowledge of enabled expires
+    defined: false, //has the config been defined yet
     enabled: false, //is this topic enabled
     debug: async function (...args) {
       //do time calc before potential delay to see if we are enabled
       const now = new Date().getTime();
       const gap = now - this.timestamp;
       this.timestamp = now;
-      if (now > this.expires) {
-        //do this first so following requests don't try to find out again whilst I am checking, wasting calls
-        this.expires = now + 60000; 
-        //expired so find out if topic is enabled
-        this.enabled = await api(`debugconf/${this.topic}`);
-
+      if (!this.defined) {
+        await config(); 
+        this.defined = true;
+        const debugConf = sessionStorage.getItem('debug');
+        if (debugConf.indexOf(`:${this.tl}:`) >= 0) this.enabled = true;
       }
       if (this.enabled) {
         const message = args.reduce((cum, arg) => {
