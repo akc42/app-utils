@@ -47,8 +47,10 @@ export default async function api(url, params, blob, signal) {
       return {};
     }
   } catch (err) {
-    if (err.type === 'api-error') throw err; //just throw whatever error we had
-    //we failed to parse the json - the actual code should be in the text near the end;
-    throw new CustomEvent('api-error', { composed: true, bubbles: true, detail: parseInt((text?? '---502---').substr(-6, 3), 10) });
+    if (!options.signal || !options.signal.aborted) {
+      if (err.type === 'api-error') throw err; //just throw whatever error we had
+      //we failed to parse the json - the actual code should be in the text near the end;
+      throw new CustomEvent('api-error', { composed: true, bubbles: true, detail: parseInt((text?? '---502---').slice(-6, -3), 10) });
+    }
   }
 }
