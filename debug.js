@@ -74,22 +74,24 @@ function Debug (t) {
     topic: tl,
     timestamp: new Date().getTime(),
     defined: false, //has the config been defined yet
-    enabled: false, //is this topic enabled
     debug: async function (...args) {
       //do time calc before potential delay to see if we are enabled
       const now = new Date().getTime();
       const gap = now - this.timestamp;
       this.timestamp = now;
       if (!this.defined) {
+        //just await the config the first time through.  Thereafter we can assume its done
         await config(); 
         this.defined = true;
-        const debugConf = sessionStorage.getItem('debug');
-        if (debugConf) {
-          const topics = debugConf.split(':');
-          if (topics.includes(this.topic)) this.enabled = true;
-        }
       }
-      if (this.enabled) {
+      let enabled = false;
+      const debugConf = sessionStorage.getItem('debug');
+      if (debugConf) {
+        const topics = debugConf.split(':');
+        if (topics.includes(this.topic)) enabled = true;
+      }
+    
+      if (enabled) {
         const message = args.reduce((cum, arg) => {
           return `${cum} ${arg}`.trim();
         }, '');
