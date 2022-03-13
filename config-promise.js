@@ -20,12 +20,12 @@
 
 let configPromise;
 
-export function mockConfig(promise) {
-  configPromise = promise;
+export function setConfig(promise) {
+  configPromise = promise; //set to undefined to allow config call to request from server again.
 }
 
 async function config() {
-  if (configPromise === undefined) {
+  if (typeof configPromise === 'undefined') {
     let resolved = false;
     let resolver;
     configPromise = new Promise(accept => resolver = accept);
