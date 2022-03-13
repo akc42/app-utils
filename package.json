@@ -1,6 +1,6 @@
 {
   "name": "@akc42/app-utils",
-  "version": "3.2.2",
+  "version": "3.3.0",
   "description": "General Utilities for SPAs",
   "exports": {
     ".": "./*.js"
