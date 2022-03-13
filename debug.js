@@ -145,12 +145,13 @@ function Debug(t) {
         await config();
         this.defined = true;
       }
+      let enabled = false;
       const debugConf = sessionStorage.getItem('debug');
       if (debugConf) {
         const topics = debugConf.split(':');
-        if (topics.includes(this.topic)) this.enabled = true;
+        if (topics.includes(this.topic)) enabled = true;
       }
-      if (this.enabled) {
+      if (enabled) {
         const blob = new Blob([JSON.stringify({
           message: message,
           gap: gap
