@@ -105,13 +105,15 @@ function unloadDebug() {
 function debugDump() {
   bufferFull();  //this clears out the marks and gives us a buffer to now send to
   buffer.reverse();
+  let message = '';
   for (let i = 0; i < buffer.length; i++) {
-    const blob = new Blob([JSON.stringify({
-      message: buffer[i].message,
-      gap: i < buffer.length - 1 ? buffer[i].time - buffer[i + 1].time : 0
-    })], { type: 'application/json' });
-    navigator.sendBeacon(`/api/debuglog/${buffer[i].topic}`, blob);
+    message += `(${buffer[i].topic}) ${buffer[i].message} :gap ${i < buffer.length - 1 ? buffer[i].time - buffer[i + 1].time : 0}ms\n`;
   }
+  const blob = new Blob([JSON.stringify({
+    message: message
+  })], { type: 'application/json' });
+  navigator.sendBeacon(`/api/debuglog/clientpath`, blob);
+
   buffer = []; //we will start our buffer from scratch again
 
 }
