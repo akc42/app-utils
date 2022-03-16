@@ -76,20 +76,17 @@ let initialised = false;
 function bufferFull() {
   const entries = performance.getEntriesByType('mark');
   performance.clearMarks();
-  if (entries.length > BUFFER_SIZE) {
-    let i = 0;
-    buffer = entries.filter((entry) => {
-      if (entry.name !== KEY_TOPIC) i++; //don't count critical topics in our 
-      return i <= BUFFER_SIZE || entry.name === KEY_TOPIC;
-    }).map(entry => ({ topic: entry.name, message: entry.detail, time: Math.round(entry.startTime) }));
+  const startPoint = entries.length - BUFFER_SIZE;
+  if (entries.length < BUFFER_SIZE) {
+    buffer.splice(0,buffer.length + startPoint);
   } else {
-    const len = buffer.length;
-    if ((len + entries.length) > BUFFER_SIZE) {
-      buffer.splice(0, len + entries.length - BUFFER_SIZE); //get rid of the head entries that would cause overflow
-    }
-    buffer = buffer.concat(entries.map(entry => ({ topic: entry.name, message: entry.detail, time: Math.round(entry.startTime) })))
+    buffer = [];
   }
-
+  for (let i = 0; i < entries.length; i++) {
+    if (entries[i].name === KEY_TOPIC || i >= startPoint) {
+      buffer.push({ topic: entries[i].name, message: entries[i].detail, time: Math.round(entries[i].startTime)});
+    }
+  }
 }
 
 function initialiseDebug() {
