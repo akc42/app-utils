@@ -73,18 +73,15 @@ const topicMap = new Map();
 
 let initialised = false;
 
+
 function bufferFull() {
   const entries = performance.getEntriesByType('mark');
   performance.clearMarks();
   const startPoint = entries.length - BUFFER_SIZE;
-  if (entries.length < BUFFER_SIZE) {
-    buffer.splice(0,buffer.length + startPoint);
-  } else {
-    buffer = [];
-  }
+  buffer.splice(0, buffer.length + startPoint);
   for (let i = 0; i < entries.length; i++) {
     if (entries[i].name === KEY_TOPIC || i >= startPoint) {
-      buffer.push({ topic: entries[i].name, message: entries[i].detail, time: Math.round(entries[i].startTime)});
+      buffer.push({ topic: entries[i].name, message: entries[i].detail, time: Math.round(entries[i].startTime) });
     }
   }
 }
