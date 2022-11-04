@@ -36,7 +36,7 @@ export default async function api(url, params, blob, signal) {
     const response = await window.fetch(address, options);
     if (!response.ok) throw new CustomEvent('api-error', {composed: true, bubbles: true , detail:response.status});
     performance.mark('fetchdone', {detail: address});
-    performance.measure('apicalltime',{startMark: 'fetchapi', endMark:'fetchdone', detail: address});
+    performance.measure('apicalltime',{start: 'fetchapi', end:'fetchdone', detail: address});
     if (blob) {
       text = '---502---';  //Simulate a 502 (bad gateway) incase there is an error in following.
       const b = await response.blob();
