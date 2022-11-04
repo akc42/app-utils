@@ -20,6 +20,7 @@
 
 
 export default async function api(url, params, blob, signal) {
+  const address = '/api/' + url;
   const options = {
     credentials: 'same-origin',
     method: 'post',
@@ -28,11 +29,14 @@ export default async function api(url, params, blob, signal) {
     }),
     body: JSON.stringify(params ?? {})
   };
+  performance.mark('fetchapi', { detail: `${address} params: ${options.body}` })
   if (signal) options.signal = signal;
   let text;
   try {
-    const response = await window.fetch('/api/' + url, options);
+    const response = await window.fetch(address, options);
     if (!response.ok) throw new CustomEvent('api-error', {composed: true, bubbles: true , detail:response.status});
+    performance.mark('fetchdone', {detail: address});
+    performance.measure('apicalltime',{startMark: 'fetchapi', endMark:'fetchdone', detail: address});
     if (blob) {
       text = '---502---';  //Simulate a 502 (bad gateway) incase there is an error in following.
       const b = await response.blob();
