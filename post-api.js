@@ -34,7 +34,7 @@ export default async function api(url, params, blob, signal) {
   let text;
   try {
     const response = await window.fetch(address, options);
-    if (!response.ok) throw new CustomEvent('api-error', {composed: true, bubbles: true , detail:response.status});
+    if (!response.ok) throw new CustomEvent('api-error', {composed: true, bubbles: true , detail:{status:response.status, url:address}});
     performance.mark('fetchdone', {detail: address});
     performance.measure('apicalltime',{start: 'fetchapi', end:'fetchdone', detail: address});
     if (blob) {
@@ -54,7 +54,7 @@ export default async function api(url, params, blob, signal) {
     if (!options.signal || !options.signal.aborted) {
       if (err.type === 'api-error') throw err; //just throw whatever error we had
       //we failed to parse the json - the actual code should be in the text near the end;
-      throw new CustomEvent('api-error', { composed: true, bubbles: true, detail: parseInt((text?? '---502---').slice(-6, -3), 10) });
+      throw new CustomEvent('api-error', { composed: true, bubbles: true, detail: {status:parseInt((text?? '---502---').slice(-6, -3), 10), url:address }});
     }
   }
 }
