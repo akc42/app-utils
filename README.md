@@ -86,22 +86,6 @@ debug has been replaced with a version that works differently and is incompatibl
   `this.keys.lastPressed`, and it will return the complete binding object
 
 
-# config-promise
-
-  This module provides two functions:-
-
-  1. This first is the default function which when called returns a promise. 
-  2. a `mockConfig` function which can be used by a test harness to provide the promise returned by the default function
-  
-  If a request is made for the promise and it hasn't yet been created a new promise is made with a fetch get request to `/api/config`
-  to retrieve the configuration data.  If the server is down, this request will continue attempting to get the value once a minute ad
-  infinitum.
-
-  The configuration data is returned to resolve the promise, but local session
-  storage also has one item added to it for each of the first level properties
-  of this data.  If the property is a String, this is stored in the session
-  storage as is, otherwise the value is passed through `JSON.stringify` and that is stored. 
-
 # csv
 
   the modules default export is a function which can be called with a name and optionally a parameters object.  The name is added to `/api/csv/` to make a download request and if they exist the parameters object is turned into a query string.  The response from that uri is downloaded (expected to be a csv file).
