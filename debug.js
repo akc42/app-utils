@@ -127,7 +127,7 @@ function Debug(t) {
     topic: tl,
     timestamp: new Date().getTime(),
     defined: false, //has the config been defined yet
-    debug: async function (...args) {
+    debug: function (...args) {
       //do time calc before potential delay to see if we are enabled
       const now = new Date().getTime();
       const gap = now - this.timestamp;
@@ -136,10 +136,6 @@ function Debug(t) {
         return `${cum} ${arg}`.trim();
       }, '');
       if (initialised) performance.mark(this.topic, { detail: message });  //save our message locally regardless of if enabled
-      if (!this.defined) {
-        await config();
-        this.defined = true;
-      }
       let enabled = false;
       const debugConf = sessionStorage.getItem('debug');
       if (debugConf) {
