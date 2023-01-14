@@ -63,7 +63,6 @@
   debugDump - perform a dump to the server (and and a clearing out of the buffered info) of the debug calls made to date
 
 */
-import config from './config-promise.js';
 
 const BUFFER_SIZE = 50;
 const KEY_TOPIC = 'key'; //topic name which will get kept from a full resource buffer when we empty it.
