@@ -52,6 +52,7 @@ export default async function api(url, params, blob, signal) {
     }
   } catch (err) {
     if (!options.signal || !options.signal.aborted) {
+      if (err instanceof TypeError) throw new CustomEvent('api-network', { bubbles:true, composed:true, detail: address})
       if (err.type === 'api-error') throw err; //just throw whatever error we had
       //we failed to parse the json - the actual code should be in the text near the end;
       throw new CustomEvent('api-error', { composed: true, bubbles: true, detail: {status:parseInt((text?? '---502---').slice(-6, -3), 10), url:address }});
