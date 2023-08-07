@@ -18,7 +18,7 @@
     along with Distributed Router.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-import {Debug} from './debug.js';
+import Debug from './debug.js';
 let routeCallback = null;
 let lastChangedAt;
 let route = null;
@@ -79,7 +79,7 @@ function routeChanged(e) {
   let newPath = route.path;
   if(e.detail.path !== undefined) {
     if (Number.isInteger(e.detail.segment)) {
-      debug('route change called path', e.detail.path, 'segments', d.detail.segment, 'current path', route.path )
+      debug('route change called path', e.detail.path, 'segments', e.detail.segment, 'current path', route.path )
       let segments = route.path.split('/');
       if (segments[0] === '') segments.shift(); //loose leeding
       if(segments.length < e.detail.segment) {
