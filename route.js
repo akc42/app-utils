@@ -17,7 +17,7 @@
     You should have received a copy of the GNU General Public License
     along with Distributed Router.  If not, see <http://www.gnu.org/licenses/>.
 */
-import {Debug} from './debug.js';
+import Debug from './debug.js';
 
 const debug = Debug('router');
 
