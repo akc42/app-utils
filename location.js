@@ -18,16 +18,19 @@
     along with Distributed Router.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+import {Debug} from './debug.js';
 let routeCallback = null;
 let lastChangedAt;
 let route = null;
 
+const debug = Debug('router');
 
 const dwellTime = () => {
   return parseInt(localStorage.getItem('dwellTime') || 2000, 10);  //dwell time might not be set initially, so keep retrying.
 }
 
 export function connectUrl(callback) {
+  debug('connectUrl called')
   if (routeCallback  === null) {
     window.addEventListener('hashchange', urlChanged);
     window.addEventListener('popstate', urlChanged);
@@ -43,6 +46,7 @@ export function connectUrl(callback) {
 
 }
 export function disconnectUrl() {
+  debug('disconnectUrl called')
   routeCallback = null;
   window.removeEventListener('hashchange',urlChanged);
   window.removeEventListener('popstate', urlChanged);
@@ -59,6 +63,7 @@ function urlChanged() {
   } 
   const query = decodeParams(window.location.search.substring(1));
   if (route && route.path ===  path && JSON.stringify(route.query) === JSON.stringify(query)) return;
+  debug('url change route to path',path, 'has query', Object.keys(query).length > 0 )
   lastChangedAt = window.performance.now();
   route = {
     path: path ,
@@ -74,6 +79,7 @@ function routeChanged(e) {
   let newPath = route.path;
   if(e.detail.path !== undefined) {
     if (Number.isInteger(e.detail.segment)) {
+      debug('route change called path', e.detail.path, 'segments', d.detail.segment, 'current path', route.path )
       let segments = route.path.split('/');
       if (segments[0] === '') segments.shift(); //loose leeding
       if(segments.length < e.detail.segment) {
