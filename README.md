@@ -251,3 +251,15 @@ class `LocationAltered` can generate it for you, so to change the location do:-
   history.pushState({}, null, '/user/23');
   window.dispatchEvent(new LocationAltered());
 ```
+# config
+
+Newly added in release 4.1.0, this function is used for getting the client config from the server
+
+The default export, normally named config (ie the client does `import config from @akc42/app-utils/config.js`) and allows the normal await mechanisms in `import` to 
+allow this module to make an get request to the server of `/api/config` and for the server to return it.  The   `config` variable then holds (without any further waiting)
+the client config object returned by the server.
+
+Two non default async exports are also provided. `setConfig` called with no parameters will read the config from the server, called with a promise as a parameter it expects
+that promise to be resolved with a config (useful in testing).  The other async function is `reReadConfig` with essentially causes the config to be reRead, but does also returns a promise resolving to the config.
+
+
