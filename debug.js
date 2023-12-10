@@ -63,7 +63,7 @@
   debugDump - perform a dump to the server (and and a clearing out of the buffered info) of the debug calls made to date
 
 */
-
+import config from './config.js';
 const BUFFER_SIZE = 50;
 const KEY_TOPIC = 'key'; //topic name which will get kept from a full resource buffer when we empty it.
 let buffer = []; //buffer of up to 50 topic/message pairs to allow us to hold some if resource buffer becomes full;
@@ -137,7 +137,7 @@ function Debug(t) {
       }, '');
       if (initialised) performance.mark(this.topic, { detail: message });  //save our message locally regardless of if enabled
       let enabled = false;
-      const debugConf = sessionStorage.getItem('debug');
+      const debugConf = config.debug;
       if (debugConf) {
         const topics = debugConf.split(':');
         if (topics.includes(this.topic)) enabled = true;
