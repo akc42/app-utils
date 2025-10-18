@@ -19,13 +19,11 @@
 */
 
 /*
-  The purpose of this module is to provide a debugable capability which can be
-  dynamically switched on and off browser by setting a key in the config
-  returned by the server. It will post request to '/api/debuglog' url with
-  application/json body part containing message, topic and gap, where message is
-  the concatenation of the debug parameters separated by space, topic is the
-  topic of this debug message and gap is the number of milliseconds since the
-  last debug message with the same topic.
+  The purpose of this module is to provide a debugable capability which can be dynamically switched on and off browser
+  by setting sessionStorage value 'debug' to the config returned by the server. It will post request to '/api/debuglog'
+  url with application/json body part containing message, topic and gap, where message is the concatenation of the debug
+  parameters separated by space, topic is the topic of this debug message and gap is the number of milliseconds since
+  the last debug message with the same topic.
 
   Topic data is held in a map, so this module can be used in multiple modules in
   the client and if its the same topic then the gap will be since the last call
@@ -41,13 +39,11 @@
 
   debug(..messages) //messages will be concatenated by space
 
-  the debug function will only log the message on the server if config.debug (see
-  config-promise) is set to a string which is a colon separated list of topics
+  the debug function will only log the message on the server if sessionStorage "debug"  is set to a string which is a colon separated list of topics
   and that list has the topic for this debug call in it.
 
   NOTE: It is normally expected for the server to provide a mechanism to update
-  the config before it is returned,  However an alternative approach would be to 
-  specifically overwrite sessionStorage 'debug' item with a new list of topics when you want
+  the confgi before it is returned,  The main app then overwrites sessionStorage 'debug' item with a new list of topics when you want
   debug to switch on and off dynamically.
 
   regardless of whether the message is logged on the server, it is also added to the performance.mark buffer
@@ -63,7 +59,7 @@
   debugDump - perform a dump to the server (and and a clearing out of the buffered info) of the debug calls made to date
 
 */
-import config from './config.js';
+
 const BUFFER_SIZE = 50;
 const KEY_TOPIC = 'key'; //topic name which will get kept from a full resource buffer when we empty it.
 let buffer = []; //buffer of up to 50 topic/message pairs to allow us to hold some if resource buffer becomes full;
@@ -137,7 +133,7 @@ function Debug(t) {
       }, '');
       if (initialised) performance.mark(this.topic, { detail: message });  //save our message locally regardless of if enabled
       let enabled = false;
-      const debugConf = config.debug;
+      const debugConf = sessionStorage.getItem('debug');
       if (debugConf) {
         const topics = debugConf.split(':');
         if (topics.includes(this.topic)) enabled = true;
