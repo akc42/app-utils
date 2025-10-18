@@ -55,7 +55,7 @@ export function disconnectUrl() {
 }
 
 function urlChanged() {
-  let path = window.decodeURIComponent(window.location.pathname);
+  let path = window.location.pathname;
   const slashIndex = path.lastIndexOf('/');
   if (path.substring(slashIndex + 1).indexOf('.') >= 0) {
     //we have a '.' in the last part of the path, so cut off this segment

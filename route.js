@@ -73,7 +73,7 @@ export default class Route  {
           if (j <= 0)  {
             return this._clearOutActive();
           }
-          let segment = urlPieces.shift();
+          let segment = decodeURIComponent(urlPieces.shift());
           j--;
           if (matchedPieces[i].length !== 0) {
             if (matchedPieces[i].substring(0,1) === ':') {
