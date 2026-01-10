@@ -21,7 +21,7 @@
 export function generateUri(path, params) {
   var str = [];
   if (params) {
-    for (var param in params) {
+    for (const param in params) {
       //eslint-disable-next-line no-prototype-builtins
       if (params.hasOwnProperty(param)) {
         str.push(encodeURIComponent(param) + '=' + encodeURIComponent(params[param]));
@@ -38,5 +38,10 @@ export function switchPath(path, params) {
   history.pushState({}, null, generateUri(path, params));
   window.dispatchEvent(new CustomEvent('location-altered', { composed: true, bubbles: true }));
 }
-export default switchPath;
 
+export function navigate (e) {
+  const link = e.currentTarget.getAttribute('path');
+  if (typeof link !== 'undefined') {
+    switchPath(link);
+  }
+}

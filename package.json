@@ -1,10 +1,8 @@
 {
   "name": "@akc42/app-utils",
-  "version": "4.2.2",
+  "version": "5.0.0",
   "description": "General Utilities for SPAs",
-  "exports": {
-    ".": "./*.js"
-  },
+  "mains": "app-utils.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -20,5 +18,9 @@
   "bugs": {
     "url": "https://github.com/akc42/app-utils/issues"
   },
-  "homepage": "https://github.com/akc42/app-utils#readme"
+  "homepage": "https://github.com/akc42/app-utils#readme",
+  "dependencies": {
+    "@akc42/server-utils": "^3.4.2",
+    "lit": "^3.3.1"
+  }
 }
