@@ -24,7 +24,7 @@
  */
 
 import {noChange} from 'lit'
-import {directive,Directive,PartType} from 'lit/directives.js';
+import {directive,Directive,PartType} from 'lit/directive.js';
 
 class PartMapDirective extends Directive {
   
