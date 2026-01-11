@@ -17,7 +17,7 @@
     You should have received a copy of the GNU General Public License
     along with @akc42/app-utils.  If not, see <http://www.gnu.org/licenses/>.
 */
-import api from './post-api.js';
+import api from './api.js';
 export default (url,params) => {
   api(`pdf/${url}`,params,true);
 }

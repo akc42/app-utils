@@ -1,6 +1,6 @@
 /**
 @licence
-    Copyright (c) 2023 Alan Chandler, all rights reserved
+    Copyright (c) 2026 Alan Chandler, all rights reserved
 
     This file is part of @akc42/app-utils.
 

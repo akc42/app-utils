@@ -111,7 +111,23 @@ Additional support is provided with
 
 ## csv
 
-  the modules default export is a function which can be called with a name and optionally a parameters object.  The name is formed into url to `/api/csv/<name>`  to make a download request and if they exist the parameters object is turned into a query string.  The response from that uri is downloaded (expected to be a csv file).
+  the modules default export is a function which can be called with a name and optionally a parameters object.  The name
+  is formed into url to `/api/csv/<name>`  to make a download request and if they exist the parameters object is turned
+  into a query string.  The response from that uri is downloaded (expected to be a csv file).
+
+## Date Utilities
+
+There are a few operations on dates and times that happen quite frequently.  This module provides 4 functions to handle them, all of which take a single parameter. We generally assume everything is in `localtime`, but there is no specific reference to this, so we just assume the answer is in the same timezone as the input.
+
+1. **minToTime** take the number of minutes from midnight and provides the string HH:MM based on the 24 hour clock. The
+   number of minutes should be between 0 and 1439, otherwise zero length string is returned.
+2. **timeToMin** takes the time and returns the number of minutes from midnight.  An invalid time string causes a -1 to
+   be returned.
+3. **strToUrlDate** converts a string formatted as DD/MM/YYYY (leading zeros may be omitted for DD and MM and YYYY must
+   be between 1900 and 2199) and returns a string formatted as YYYY-MM-DD. It the date is invalid (including using the
+   29 February on a non leap year) a zero length string is returned.
+4. **urlDateToStr** converts a string formatted as YYYY-MM-DD and returns it as DD/MM/YYYY. Leading zeros must not be
+   omitted. If the date is invalid (including any month that is too many days) that a zero length string is returned.
 
 ## debug
 
