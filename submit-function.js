@@ -20,7 +20,7 @@
 
 //handle the on submit event from a form and make it an api call 
 
-import api from './api.js';
+import {api} from './api.js';
 
 function checkNode(node, params) {
 
