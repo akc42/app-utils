@@ -17,9 +17,6 @@
     You should have received a copy of the GNU General Public License
     along with Distributed Router.  If not, see <http://www.gnu.org/licenses/>.
 */
-import Debug from './debug.js';
-
-const debug = Debug('router');
 
 export default class Route  {
   constructor(match = '', ifmatched = '') {
@@ -35,11 +32,9 @@ export default class Route  {
     //this is our output
     this._route = {active: false, segment: 0, path: '', params: {}, query: {}};
     this.sentRouteChanged = false;
-    debug('new route made with match', match, 'ifmatched', ifmatched)
   }
 
   routeChange(preroute) {
-    debug('routeChanged called with preroute of', JSON.stringify(preroute));
     this.preroute = preroute; //remember it
     if (preroute !== undefined && preroute.active && preroute.path.length > 0 &&
       this._ifMatches(preroute.params) ) {
@@ -107,7 +102,6 @@ export default class Route  {
           this._route =  newRoute;
           this.sentRouteChanged = true;
         }
-        debug('Route Change returning (no clear active)', JSON.stringify(this._route));
       } else {
         throw new Error('Route: Match String Required');
       }
@@ -166,7 +160,6 @@ export default class Route  {
       }
       if (changeMade) {
         const path = '/' + urlPieces.join('/');
-        debug('params set, about to set path',path,'segment', this.preroute.segment );
         window.dispatchEvent(new CustomEvent ('route-changed',{bubbles: true, composed: true, detail:{
           segment: this.preroute.segment,
           path: path
@@ -179,7 +172,6 @@ export default class Route  {
    */
   set query(value) {
     const jsv = JSON.stringify(value)
-    debug('set query to value', jsv)
     if (this._route.active && JSON.stringify(this._route.query) !== jsv) {
       window.dispatchEvent(new CustomEvent('route-changed',{bubbles: true, composed: true, detail:{query: value}}));
     }
@@ -188,7 +180,6 @@ export default class Route  {
    * We can set or break the connection between a pre-route and its route
    */
   set connection(value) {
-    debug('set connection called with value', value);
     if (this.preroute.active) {
       if (this._route.active) {
         if (value) return; //can't set a matched route active
@@ -226,7 +217,6 @@ export default class Route  {
       this._route = Object.assign({}, this._route, {active:false});
       this.sentRouteChanged = true;
     }
-    debug('clearOutActive returning route', JSON.stringify(this._route));
     return this._route;
   }
 }
