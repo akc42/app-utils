@@ -1,6 +1,6 @@
 /**
 @licence
-    Copyright (c) 2021 Alan Chandler, all rights reserved
+    Copyright (c) 2026 Alan Chandler, all rights reserved
 
     This file is part of @akc42/app-utils.
 
@@ -50,7 +50,7 @@
   It doesn't need short date, or immediate parameters as thats whats assumed
 
 */
-import {DebugHelper, messageFormatter} from '@akc42/server-utils';
+import {DebugHelper, messageFormatter} from './debug-utils.js';
 
 export function Logger(topic, colourspec) {
   const debug = Debug(topic, colourspec, 1,1);

@@ -18,7 +18,7 @@
     along with Distributed Router.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-export default class Route  {
+export class Route  {
   constructor(match = '', ifmatched = '') {
     //set default values
     this.preroute = {active: false, segment: 0, path: '', params: {}, query: {}};

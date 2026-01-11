@@ -94,9 +94,9 @@ The response is aysnchronousally returned as an object.  Errors are throw using 
   If for any reason you want more info about the keyPress, access
   `this.keys.lastPressed`, and it will return the complete binding object
 
-## calcTextColour
+## utilities
 
-This is a utility function to determine the correct foreground colour (black or white) to use with a background colour
+**calcTextColour** is a utility function to determine the correct foreground colour (black or white) to use with a background colour
 passed as the parameter (as a hex strings with an optional proceeding `#` symbol.). The colour is returned as either `#000000` or `#ffffff`
 
 ## config and related 
@@ -166,6 +166,64 @@ dynamically checks them) are:-
 
 **Logger** is like Debug (indeed its a wrapper for it) except it doesn't need short date, or immediate parameters as 
 that is what is assumed.
+
+It is called with the following parameters in order:-
+
+- *logid* The `logid` (the primary key) of the message in the database (only used in the message output if the item was
+  a crash).
+- *logtime* This is either a unix timestamp *or* a string with the date and/or time in it.  It should be in the same
+  format as being formatted (see above).
+- *crash* a 0 or 1 dependant on if this message was a crash or not.
+- *shortdate* a 0 or 1 dependant on if this message has a short date or not,
+- *ipaddress* should be a valid ip address or `null`.
+- *topic*
+- *message* Just a single string
+- *colourspec*
+- *gap* Gap in milliseconds (this routine does the conversion to minutes if a `shortdate`).
+
+It returns an Object with 4 properties
+
+- *dayoutput* If the first message of the day, text with the date (only) in it, otherwise a zero length string.
+- *message* The complete formatted message
+- *logid* The `logid` the formatter was called with.
+- *ip* The `ipaddress` the formatter was called with.
+
+**DebugHelper** is a helper function for *Debug* and performs most of its work.   It is called with the same parameters as *Debug* plus an additional one; *writer*.  *writer* should be a callback function that can do something with the message and then return the return object that a debug call does.  In the use by *Debug* this function is the one writes the data to the database, but other writers can be provided. For instance the *Debug* function in this package uses the writer to send the message from the client to the server, whereas in the server (`@akc42/server-utils`) it is the function that writes the message to the database. 
+
+*writer* is called with the following parameters (all described above for *debug*, although in this case they *must* be supplied)
+
+- *logtime* (unix timestamp)
+- *crash* (0 or 1)
+- *shortdate* (0 or 1)
+- *ipaddress* (or `null`)
+- *topic*
+- *colourspec*
+- *gap*
+- *immediate* (`true` or `false`)
+
+**messageFormatter** is the routine that formats the raw message that has been written to the database.
+
+It is called with the following parameters in order:-
+
+- *logid* The `logid` (the primary key) of the message in the database (only used in the message output if the item was
+  a crash).
+- *logtime* This is either a unix timestamp *or* a string with the date and/or time in it.  It should be in the same
+  format as being formatted (see above).
+- *crash* a 0 or 1 dependant on if this message was a crash or not.
+- *shortdate* a 0 or 1 dependant on if this message has a short date or not,
+- *ipaddress* should be a valid ip address or `null`.
+- *topic*
+- *message* Just a single string
+- *colourspec*
+- *gap* Gap in milliseconds (this routine does the conversion to minutes if a `shortdate`).
+
+It returns an Object with 4 properties
+
+- *dayoutput* If the first message of the day, text with the date (only) in it, otherwise a zero length string.
+- *message* The complete formatted message
+- *logid* The `logid` the formatter was called with.
+- *ip* The `ipaddress` the formatter was called with.
+
 
 ## dom-host
 

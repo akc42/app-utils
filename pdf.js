@@ -18,6 +18,6 @@
     along with @akc42/app-utils.  If not, see <http://www.gnu.org/licenses/>.
 */
 import {api} from './api.js';
-export default (url,params) => {
+export function pdf (url,params) {
   api(`pdf/${url}`,params,true);
 }

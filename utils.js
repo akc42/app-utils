@@ -23,12 +23,29 @@
   proceeded by #
 */
 
-function calcTextColor(backgroundColor) {
+export function calcTextColor(backgroundColor) {
   const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(backgroundColor);
   if (result) {
     const luminance = (0.2126 * parseInt(result[1], 16) + 0.7152 * parseInt(result[2], 16) + 0.0722 * parseInt(result[3], 16));
     return (luminance < 140) ? "#ffffff" : "#000000";
   }
   return "#000000"
-}
-export default calcTextColor;
+};
+
+export function capitalise(name) {
+  if (name.length > 0 ) {
+    let words = name.split(' ');
+    for(let i = 0; i < words.length; i++) {
+      if (i > 0 && ( words[i].toLowerCase() === 'de' || words[i].toLowerCase() === 'la')) {
+        words[i] = words[i].toLowerCase();
+      } else if (words[i].length > 2 && words[i].toUpperCase().substring(0,2) === `O'` ) {
+        const newword = capitalise(words[i].substring(2))
+        words[i] = words[i].substring(0,2).toUpperCase() + newword;
+      } else {
+        words[i] = words[i].charAt(0).toUpperCase() + words[i].substring(1).toLowerCase();
+      }
+    }
+    return words.join(' ');
+  }
+  return '';
+};

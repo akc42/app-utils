@@ -64,7 +64,7 @@ function checkLevel(target, params) {
   return Array.prototype.filter.call(target.children, n => n.nodeType === Node.ELEMENT_NODE).reduce((acc, node) => checkNode(node, params) && acc, true);
 }
 
-export default function submit(e) {
+export function submit(e) {
   let target;
   if (e.currentTarget) {
     e.stopPropagation();
