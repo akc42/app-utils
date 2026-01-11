@@ -1,6 +1,6 @@
 {
   "name": "@akc42/app-utils",
-  "version": "5.0.2",
+  "version": "5.0.3",
   "description": "General Utilities for SPAs",
   "mains": "app-utils.js",
   "scripts": {
@@ -20,7 +20,7 @@
   },
   "homepage": "https://github.com/akc42/app-utils#readme",
   "dependencies": {
-    "@akc42/server-utils": "^3.4.2",
+    "@akc42/server-utils": "^4.0.0",
     "lit": "^3.3.1"
   }
 }
