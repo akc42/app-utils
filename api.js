@@ -18,10 +18,6 @@
     along with @akc42/app-utils.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-import Debug from './debug.js';
-
-const debug = Debug('client-api', 'api');
-
 class ApiError extends Error {
   constructor(address, code) {
     super('API Error: ' + address)
@@ -58,24 +54,20 @@ async function api(url, params, bl) {
           'chrome=yes,centerscreen,resizable,scrollbars,status,height=800,width=800');
 
         document.body.dispatchEvent(new CustomEvent('wait-request',{bubbles: true, composed: true, detail: false}));
-        debug('request returned blob');
         return {};
       } else {
         text = await response.text();
         if (text.length > 0) {
           const j = JSON.parse(text);
           document.body.dispatchEvent(new CustomEvent('wait-request',{bubbles: true, composed: true, detail: false}));
-          debug('request returned JSON', text);
           return j;
         }
         document.body.dispatchEvent(new CustomEvent('wait-request',{bubbles: true, composed: true, detail: false}));
-        debug('empty return');
         return {};
       }
 
     } else if (response.status < 500) throw new ApiError(address, response.status);
   } catch (err) {
-    //no debug needed - will report at where its thrown
     clearTimeout(timer);
     if (!(err instanceof TypeError)) {
       //not network failure so no retry
