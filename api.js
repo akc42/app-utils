@@ -24,8 +24,11 @@ class ApiError extends Error {
     this.name = 'API' + code.toString();
   }
 }
-
-const apiEvent = new CustomEvent('api-complete',{bubbles:true, composed: true});
+class ApiEvent extends CustomEvent {
+  constructor(message) {
+    super ('api-complete', {bubbles: true, composed: true, detail: message});
+  }
+}
 const waitEvent = new CustomEvent('wait-request', {bubbles: true, composed: true, detail: false});
 
 async function api(url, params, bl) {
@@ -57,21 +60,18 @@ async function api(url, params, bl) {
           'chrome=yes,centerscreen,resizable,scrollbars,status,height=800,width=800');
 
         document.body.dispatchEvent(waitEvent);
-        apiEvent.detail = address + ' blob received';
-        document.body.dispatchEvent(apiEvent)
+        document.body.dispatchEvent(new ApiEvent(address + ': blob received'))
         return {};
       } else {
         text = await response.text();
         if (text.length > 0) {
           const j = JSON.parse(text);
           document.body.dispatchEvent(waitEvent);
-          apiEvent.detail = address + ': ' + JSON.stringify(j)
-          document.body.dispatchEvent(apiEvent);
+          document.body.dispatchEvent(new ApiEvent(address + ': ' + JSON.stringify(j)));
           return j;
         }
         document.body.dispatchEvent(waitEvent);
-        apiEvent.detail = address + ': {}';
-        document.body.dispatchEvent(apiEvent);
+        document.body.dispatchEvent(new ApiEvent(address + ': {}'));
         return {};
       }
 
