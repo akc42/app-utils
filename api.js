@@ -25,6 +25,9 @@ class ApiError extends Error {
   }
 }
 
+const apiEvent = new CustomEvent('api-complete',{bubbles:true, composed: true});
+const waitEvent = new CustomEvent('wait-request', {bubbles: true, composed: true, detail: false});
+
 async function api(url, params, bl) {
   const blob = bl;
   const controller = new AbortController();
@@ -53,16 +56,22 @@ async function api(url, params, bl) {
           '_blank',
           'chrome=yes,centerscreen,resizable,scrollbars,status,height=800,width=800');
 
-        document.body.dispatchEvent(new CustomEvent('wait-request',{bubbles: true, composed: true, detail: false}));
+        document.body.dispatchEvent(waitEvent);
+        apiEvent.detail = address + ' blob received';
+        document.body.dispatchEvent(apiEvent)
         return {};
       } else {
         text = await response.text();
         if (text.length > 0) {
           const j = JSON.parse(text);
-          document.body.dispatchEvent(new CustomEvent('wait-request',{bubbles: true, composed: true, detail: false}));
+          document.body.dispatchEvent(waitEvent);
+          apiEvent.detail = address + ': ' + JSON.stringify(j)
+          document.body.dispatchEvent(apiEvent);
           return j;
         }
-        document.body.dispatchEvent(new CustomEvent('wait-request',{bubbles: true, composed: true, detail: false}));
+        document.body.dispatchEvent(waitEvent);
+        apiEvent.detail = address + ': {}';
+        document.body.dispatchEvent(apiEvent);
         return {};
       }
 
