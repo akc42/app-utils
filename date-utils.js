@@ -20,7 +20,7 @@
 const timeRegex = /^((?:0?[0-9]|1[0-9]|2[0-3]))(?::((?:0?[0-9]|[1-5][0-9])))?$/;
 export function minToTime(m) {
   if (m === 0) return '00:00';
-  if (isNaN(m) || m < 0 || m > 1439) return '';
+  if (isNaN(m) || m < 0 || m > 1439) return false;
 
   var hr = Math.floor(m/60);
   var mn = Math.floor(m % 60);
@@ -28,7 +28,7 @@ export function minToTime(m) {
 };
 
 export function timeToMin(time) {
-  if (typeof time !== 'string') return -1; //protective against crashes
+  if (typeof time !== 'string') return 0; //protective against crashes
   if (time.length === 0) return -1;
   const matches = timeRegex.exec(time);
   if (matches) {
@@ -37,7 +37,7 @@ export function timeToMin(time) {
     let hours = parseInt(matches[1], 10);
     if (Number.isInteger(hours) && Number.isInteger(mins)) return  (hours * 60) + mins;
   }
-  return -1;
+  return 0;
 };
 
 const urlRegex = /^((?:19|2[01])(?:(?:(?:0[48]|[2468][048]|[13579][26])(?=-02-29))|\d{2}(?!-02-(?:29|3[01]))))-((?:02(?!-3[01])|0[469](?!-31)|11(?!-31)|(?:0[13578]|1[02])))-([0][1-9]|[12][0-9]|3[01])$/;
