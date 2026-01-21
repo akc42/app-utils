@@ -29,7 +29,7 @@ export function minToTime(m) {
 
 export function timeToMin(time) {
   if (typeof time !== 'string') return 0; //protective against crashes
-  if (time.length === 0) return -1;
+  if (time.length === 0) return 0;
   const matches = timeRegex.exec(time);
   if (matches) {
     let mins = 0;
