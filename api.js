@@ -17,6 +17,7 @@
     You should have received a copy of the GNU General Public License
     along with @akc42/app-utils.  If not, see <http://www.gnu.org/licenses/>.
 */
+import isNetworkError from 'is-network-error';
 
 class ApiError extends Error {
   constructor(address, code) {
@@ -78,14 +79,12 @@ async function api(url, params, bl) {
     } else if (response.status < 500) throw new ApiError(address, response.status);
   } catch (err) {
     clearTimeout(timer);
-    if (!(err instanceof TypeError)) {
-      //not network failure so no retry
-      if (err instanceof SyntaxError) {
-        const code = Number((text?? '---502---').slice(-6, -3));
-        if (code > 299) throw new ApiError(address,code);    
-      } else if (err.name === 'AbortError') throw new ApiError(address, 504);  //simulate gateway timeout
-      throw err; //just throw what we have
-    }
+    if (isNetworkError(err)) throw new ApiError(address, 504); // same as gateway timeout
+    if (err instanceof SyntaxError) {
+      const code = Number((text?? '---502---').slice(-6, -3));
+      if (code > 299) throw new ApiError(address,code);    
+    } else if (err.name === 'AbortError') throw new ApiError(address, 504);  //simulate gateway timeout
+    throw err; //just throw what we have
   }
   clearTimeout(timer);
   return {};

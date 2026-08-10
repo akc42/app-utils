@@ -117,7 +117,10 @@ Additional support is provided with
 
 ## Date Utilities
 
-There are a few operations on dates and times that happen quite frequently.  This module provides 4 functions to handle them, all of which take a single parameter. We generally assume everything is in `localtime`, but there is no specific reference to this, so we just assume the answer is in the same timezone as the input.
+There are a few operations on dates and times that happen quite frequently.  This module provides 7 functions to handle
+them, most of which take a single parameter. Where it doesn't this is explained. We generally assume everything is in
+`localtime`, but there is no specific reference to this, so we just assume the answer is in the same timezone as the
+input.
 
 1. **minToTime** take the number of minutes from midnight and provides the string HH:MM based on the 24 hour clock. The
    number of minutes should be between 0 and 1439, otherwise zero length string is returned.
@@ -126,8 +129,14 @@ There are a few operations on dates and times that happen quite frequently.  Thi
 3. **strToUrlDate** converts a string formatted as DD/MM/YYYY (leading zeros may be omitted for DD and MM and YYYY must
    be between 1900 and 2199) and returns a string formatted as YYYY-MM-DD. It the date is invalid (including using the
    29 February on a non leap year) a zero length string is returned.
-4. **urlDateToStr** converts a string formatted as YYYY-MM-DD and returns it as DD/MM/YYYY. Leading zeros must not be
-   omitted. If the date is invalid (including any month that is too many days) that a zero length string is returned.
+4. **urlDateToStr** converts a string formatted as YYYY-MM-DD and returns it as the optional locale second parameter
+   ('en-GB' is the default, producing DD/MM/YYYY). Leading zeros must not be omitted. If the date is invalid (including
+   any month that is too many days) that a zero length string is returned.
+5. **daysInMonth** has to parameters(month and year respectively) and returns the number of days in the month.  Leap
+   years and special 100 boundaries are recognised
+6. **dateToUrlDate** takes a date object and returns a string formatted as YYYY-MM-DD
+7. **dateToRrlDatetime** takes a date object and returns a string formatted as YYYY-MM-DD hh:mm:ss . The time is local
+   time of the machine on which this library is running
 
 ## debug
 
